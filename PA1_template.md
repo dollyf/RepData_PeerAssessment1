@@ -24,7 +24,8 @@ The dataset is stored in a comma-separated-value (CSV) file and there are a tota
 
 The data is read from the acivity.csv file and stored in a data frame for further use
 
-```{r, echo=TRUE}
+
+```r
 setwd("~/Coursera/Reproducible Research/PA1")
 activityData <- read.csv("activity.csv")
 ```
@@ -38,12 +39,29 @@ A histogram for the total steps per day is generated using the hist function.
 
 The mean and median for the total steps per day is calculated using the mean and median functions. The mean is 10766.19 and the median is 10765.
 
-```{r, echo=TRUE}
+
+```r
 activityDataNoNA <- na.omit(activityData)
 activityDateSummary <- aggregate(steps ~ date, data=activityDataNoNA, FUN=sum)
 hist(activityDateSummary$steps, main="Histogram for Total Steps per Day collected during Oct and Nov 2012",xlab = "Total Steps per Day", breaks = 5,col="blue")
+```
+
+![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
+
+```r
 mean(activityDateSummary$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(activityDateSummary$steps)
+```
+
+```
+## [1] 10765
 ```
 
 ### Analyzing Average Daily Activity Pattern
@@ -53,10 +71,20 @@ A time series plot has been plotted with the interval on the x-axis and the aver
 
 The 5-minute interval containing the maximum number of steps averaged across all days is calculated and this is 835.  
 
-```{r, echo=TRUE}
+
+```r
 activityIntSummary <- aggregate(steps ~ interval, data=activityDataNoNA, FUN=mean)
 plot(steps ~ interval, activityIntSummary, type = "l", main = "Average Daily Activity Pattern", xlab="Interval",ylab = "Steps")
+```
+
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+
+```r
 activityIntSummary[activityIntSummary$steps==max(activityIntSummary$steps),]$interval  
+```
+
+```
+## [1] 835
 ```
 
 ### Inputting missing values
@@ -71,11 +99,18 @@ A histogram for the total steps per day for the new data set is generated using 
 The mean and median for the total steps per day is calculated using the mean and median functions. The mean and median are both 10766.19. Subsituting the values in this scenario has not changed the value for the mean and the change to the median value is not significant.
 
 
-```{r, echo=TRUE}
+
+```r
 rowswithna <- nrow(activityData[is.na(activityData$steps)==TRUE,,])
 
 print(rowswithna)
+```
 
+```
+## [1] 2304
+```
+
+```r
 activityDataSubs <- activityData[is.na(activityData$steps)==TRUE,,]
 rsum <- nrow(activityIntSummary)
 for (i in 1:rowswithna){
@@ -90,10 +125,24 @@ for (i in 1:rowswithna){
 activityDataTotal <- rbind(activityDataNoNA,activityDataSubs)
 activityDateTotalSummary <- aggregate(steps ~ date, data=activityDataTotal, FUN=sum)
 hist(activityDateTotalSummary$steps, main="Histogram for Total Steps(with NAs) per Day collected during Oct and Nov 2012",xlab = "Total Steps per Day", breaks = 5,col="blue")
+```
+
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
+
+```r
 mean(activityDateTotalSummary$steps)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(activityDateTotalSummary$steps)
+```
 
-
+```
+## [1] 10766.19
 ```
 
 ### Differences in activity patterns between weekend and weekdays
@@ -103,7 +152,8 @@ A new factor variable in the dataset with two levels - "weekday" and "weekend" i
 A panel plot containing a time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis) has been generated
 
 
-```{r, echo=TRUE}
+
+```r
 wkdays <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')
 activityDataTotalwithFactor <- cbind(activityDataTotal,factor((weekdays(as.Date(activityDataTotal$date)) %in% wkdays), levels=c(FALSE, TRUE), labels=c('weekend', 'weekday')))
 names(activityDataTotalwithFactor)[4] <- "Factor"
@@ -117,3 +167,5 @@ library("lattice")
         ylab = "Number of steps",
        layout=c(1,2))
 ```
+
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
